@@ -1,6 +1,6 @@
-import {useState} from "react";
+import { useState } from "react";
 
-function Square({value,onSquareClick}) {
+function Square({ value, onSquareClick }) {
   return (
     <button className="square" onClick={onSquareClick}>
       {value}
@@ -10,14 +10,14 @@ function Square({value,onSquareClick}) {
 
 export function Board({ xIsNext, squares, onPlay }) {
   function handleClick(i) {
-    if(squares[i] || calculateWinner(squares)){
+    if (squares[i] || calculateWinner(squares)) {
       return;
     }
 
     const nextSquares = squares.slice();
-    if(xIsNext){
+    if (xIsNext) {
       nextSquares[i] = "X";
-    }else{
+    } else {
       nextSquares[i] = "O";
     }
     onPlay(nextSquares);
@@ -25,9 +25,9 @@ export function Board({ xIsNext, squares, onPlay }) {
 
   const winner = calculateWinner(squares);
   let status;
-  if(winner){
+  if (winner) {
     status = "Winner: " + winner;
-  }else{
+  } else {
     status = "Next player: " + (xIsNext ? "X" : "O");
   }
 
@@ -59,13 +59,13 @@ export default function Game() {
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
-  function handlePlay(nextSquares){
+  function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
 
-  function jumpTo(nextMove){
+  function jumpTo(nextMove) {
     setCurrentMove(nextMove);
   }
 
@@ -76,11 +76,19 @@ export default function Game() {
     } else {
       description = 'Go to game start';
     }
-    return (
-      <li key={move}>
-        <button onClick={() => jumpTo(move)}>{description}</button>
-      </li>
-    );
+
+    // 如果是当前移动，则显示文本而不是按钮
+    if (move === currentMove && currentMove !== 0) {
+      return (
+        <li key={move}>You are at move #{move}</li>
+      );
+    } else {
+      return (
+        <li key={move}>
+          <button onClick={() => jumpTo(move)}>{description}</button>
+        </li>
+      );
+    }
   });
 
   return (
