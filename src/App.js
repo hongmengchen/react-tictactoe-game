@@ -63,6 +63,7 @@ export function Board({ xIsNext, squares, onPlay }) {
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const [isAscending, setIsAscending] = useState(true); // 添加排序状态
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
@@ -76,23 +77,28 @@ export default function Game() {
     setCurrentMove(nextMove);
   }
 
+  // 根据排序状态决定是否反转历史记录
+  const movesHistory = isAscending ? history : [...history].reverse();
   const moves = history.map((squares, move) => {
+    // 计算实际的移动索引（用于跳转）
+    const actualMove = isAscending ? move : history.length - 1 - move;
+
     let description;
-    if (move > 0) {
-      description = 'Go to move #' + move;
+    if (actualMove > 0) {
+      description = 'Go to move #' + actualMove;
     } else {
       description = 'Go to game start';
     }
 
     // 如果是当前移动，则显示文本而不是按钮
-    if (move === currentMove && currentMove !== 0) {
+    if (actualMove === currentMove && currentMove !== 0) {
       return (
-        <li key={move}>You are at move #{move}</li>
+        <li key={actualMove}>You are at move #{actualMove}</li>
       );
     } else {
       return (
-        <li key={move}>
-          <button onClick={() => jumpTo(move)}>{description}</button>
+        <li key={actualMove}>
+          <button onClick={() => jumpTo(actualMove)}>{description}</button>
         </li>
       );
     }
@@ -104,6 +110,9 @@ export default function Game() {
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
+        <button onClick={() => setIsAscending(!isAscending)}>
+          {isAscending ? 'Sort Descending' : 'Sort Ascending'}
+        </button>
         <ol>{moves}</ol>
       </div>
     </div>
